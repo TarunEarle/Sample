@@ -31,7 +31,7 @@ println rc
 // need to pull out assigned username
 	
 if (isUnix()) {
-	rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:apex:test:run -u ${HUB_ORG}
+	rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:apex:test:run -u ${HUB_ORG}"
 	rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
 	
 }else{

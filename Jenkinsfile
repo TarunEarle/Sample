@@ -45,7 +45,7 @@ if (isUnix()) {
             steps {
                 script {
                     // Run Apex tests
-                    sh 'sfdx force:apex:test:run -u your_dev_org_alias'
+                    sh 'sfdx force:apex:test:run -u ${HUB_ORG}'
                 }
             }
         }

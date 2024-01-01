@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        HUB_ORG = credentials('YourCredentialIdHere')
+        HUB_ORG = credentials('assignment@vamritech.com')
         SFDC_HOST = 'your-salesforce-instance-url'
-        CONNECTED_APP_CONSUMER_KEY = 'your-connected-app-consumer-key'
+        CONNECTED_APP_CONSUMER_KEY = '3MVG9pRzvMkjMb6lo8vCHgGoDZiG3_n5oNi.qmWkHF8WhPu3K3nnoum0Pf7F6yjNlAma7ZCTwCih2lTM66ymh'
     }
 
     stages {

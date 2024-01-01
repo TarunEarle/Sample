@@ -6,6 +6,7 @@ public class StudentControllerTest {
         //Insert stdObj;
         Test.startTest();
          StudentController.getStudent();
+         StudentController.getCreateRec();
         Test.stopTest();
     }
 }

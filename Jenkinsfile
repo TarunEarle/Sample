@@ -21,7 +21,7 @@ pipeline {
                     sh '''
                         ${TOOLBELT}/sfdx force:auth:jwt:grant
                         --clientid ${CONNECTED_APP_CONSUMER_KEY}
-                        --username ${HUB_ORG_USR}
+                        --username assignment@vamritech.com
                         --jwtkeyfile ${HUB_ORG}
                         --setdefaultdevhubusername
                         --instanceurl ${SFDC_HOST}

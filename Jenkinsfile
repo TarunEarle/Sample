@@ -1,10 +1,11 @@
 pipeline {
     agent any
-    
+
     environment {
-        HUB_ORG = credentials('assignment@vamritech.com')
-        SFDC_HOST = 'your-salesforce-instance-url'
+        HUB_ORG = env.HUB_ORG_DH
         CONNECTED_APP_CONSUMER_KEY = '3MVG9pRzvMkjMb6lo8vCHgGoDZiG3_n5oNi.qmWkHF8WhPu3K3nnoum0Pf7F6yjNlAma7ZCTwCih2lTM66ymh'
+        SFDC_HOST = env.SFDC_HOST_DH
+        TOOLBELT = tool 'toolbelt'
     }
 
     stages {
@@ -14,37 +15,37 @@ pipeline {
             }
         }
 
-        stage('Authenticate with Dev Hub') {
+        stage('Authorize Hub Org') {
             steps {
                 script {
-                    def authResult = sh(script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG_USR} --jwtkeyfile path/to/your/server.key --setdefaultdevhubusername --instanceurl ${SFDC_HOST}", returnStatus: true)
-                    if (authResult != 0) {
-                        error 'Dev Hub authorization failed'
-                    }
+                    sh '''
+                        ${TOOLBELT}/sfdx force:auth:jwt:grant
+                        --clientid ${CONNECTED_APP_CONSUMER_KEY}
+                        --username ${HUB_ORG_USR}
+                        --jwtkeyfile ${HUB_ORG}
+                        --setdefaultdevhubusername
+                        --instanceurl ${SFDC_HOST}
+                    '''
                 }
             }
         }
-
-        stage('Deploy Code') {
-            steps {
-                script {
-                    def deployResult = sh(script: 'sfdx force:source:deploy -p force-app/main/default -u ${HUB_ORG_USR}', returnStatus: true)
-                    if (deployResult != 0) {
-                        error 'Code deployment failed'
-                    }
-                }
-            }
-        }
-
+        
         stage('Run Apex Tests') {
             steps {
                 script {
-                    def testResult = sh(script: 'sfdx force:apex:test:run -u ${HUB_ORG_USR}', returnStatus: true)
-                    if (testResult != 0) {
-                        error 'Apex tests failed'
-                    }
+                    sh "${TOOLBELT}/sfdx force:apex:test:run -u ${HUB_ORG_USR}"
                 }
             }
         }
+        
+        stage('Deploy Code') {
+            steps {
+                script {
+                    sh "${TOOLBELT}/sfdx force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG_USR}"
+                }
+            }
+        }
+
+        
     }
 }

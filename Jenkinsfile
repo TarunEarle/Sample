@@ -1,46 +1,48 @@
-#!groovy
-import groovy.json.JsonSlurperClassic
-
-node {
-    def BUILD_NUMBER = env.BUILD_NUMBER
-    def SFDC_USERNAME
-
-    def HUB_ORG = env.HUB_ORG_DH
-    def SFDC_HOST = env.SFDC_HOST_DH
-    def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-    def CONNECTED_APP_CONSUMER_KEY = '3MVG9pRzvMkjMb6lo8vCHgGoDZiG3_n5oNi.qmWkHF8WhPu3K3nnoum0Pf7F6yjNlAma7ZCTwCih2lTM66ymh'
-
-    def toolbelt = tool 'toolbelt'
-
-    stage('checkout source') {
-        checkout scm
+pipeline {
+    agent any
+    
+    environment {
+        HUB_ORG = credentials('YourCredentialIdHere')
+        SFDC_HOST = 'your-salesforce-instance-url'
+        CONNECTED_APP_CONSUMER_KEY = 'your-connected-app-consumer-key'
     }
 
-    withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        stage('Deploy Code') {
-            script {
-                def authCmd
-                if (isUnix()) {
-                    authCmd = "${toolbelt}/sfdx force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-                } else {
-                    authCmd = "\"${toolbelt}/sfdx\" force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-                }
+    stages {
+        stage('Checkout Source') {
+            steps {
+                checkout scm
+            }
+        }
 
-                def rc = sh(script: authCmd, returnStatus: true)
-                if (rc != 0) { 
-                    error 'Hub org authorization failed' 
-                }
-
-                // Need to pull out the assigned username
-                def assignedUsername = sh(script: "${toolbelt}/sfdx force:user:display -u ${HUB_ORG} --json", returnStdout: true).trim()
-                SFDC_USERNAME = new JsonSlurperClassic().parseText(assignedUsername).result.username
-
-                if (isUnix()) {
-                    stage('Run Apex Tests') {
-                        sh "sfdx force:apex:test:run -u ${SFDC_USERNAME}"
+        stage('Authenticate with Dev Hub') {
+            steps {
+                script {
+                    def authResult = sh(script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG_USR} --jwtkeyfile path/to/your/server.key --setdefaultdevhubusername --instanceurl ${SFDC_HOST}", returnStatus: true)
+                    if (authResult != 0) {
+                        error 'Dev Hub authorization failed'
                     }
-                } else {
-                    bat "\"${toolbelt}/sfdx\" force:apex:test:run -u ${SFDC_USERNAME}"
+                }
+            }
+        }
+
+        stage('Deploy Code') {
+            steps {
+                script {
+                    def deployResult = sh(script: 'sfdx force:source:deploy -p force-app/main/default -u ${HUB_ORG_USR}', returnStatus: true)
+                    if (deployResult != 0) {
+                        error 'Code deployment failed'
+                    }
+                }
+            }
+        }
+
+        stage('Run Apex Tests') {
+            steps {
+                script {
+                    def testResult = sh(script: 'sfdx force:apex:test:run -u ${HUB_ORG_USR}', returnStatus: true)
+                    if (testResult != 0) {
+                        error 'Apex tests failed'
+                    }
                 }
             }
         }

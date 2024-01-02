@@ -30,9 +30,9 @@ node {
         }
         stage('Check Apex Test Coverage') {
             if (isUnix()) {
-                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage --u ${HUB_ORG}"
+                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage"
             } else {
-                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage --u ${HUB_ORG}"
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage"
             }
             def jsonSlurper = new JsonSlurperClassic()
             def report = jsonSlurper.parseText(rmsg)

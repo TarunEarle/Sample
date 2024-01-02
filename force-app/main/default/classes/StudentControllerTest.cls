@@ -2,11 +2,9 @@
 public class StudentControllerTest {
  @isTest
      static void getStudentRecSize() {
-        //Student__c stdObj = new Student__c(Email__c='test1@gmail.com');
-        //Insert stdObj;
-        Test.startTest();
-         StudentController.getStudent();
-         StudentController.getCreateRec();
-        Test.stopTest();
+      Test.startTest();
+      StudentController.getStudentRec();
+      Studentcontroller.createStudentRec();
+      Test.stopTest();
     }
 }

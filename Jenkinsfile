@@ -1,58 +1,61 @@
 #!groovy
 import groovy.json.JsonSlurperClassic
-
 node {
     def BUILD_NUMBER = env.BUILD_NUMBER
     def RUN_ARTIFACT_DIR = "tests/${BUILD_NUMBER}"
+    def SFDC_USERNAME
+    def TEST_LEVEL='RunLocalTests'
     def HUB_ORG = env.HUB_ORG_DH
     def SFDC_HOST = env.SFDC_HOST_DH
     def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
     def CONNECTED_APP_CONSUMER_KEY = '3MVG9pRzvMkjMb6lo8vCHgGoDZiG3_n5oNi.qmWkHF8WhPu3K3nnoum0Pf7F6yjNlAma7ZCTwCih2lTM66ymh'
-
-    echo 'KEY IS'
-    echo JWT_KEY_CRED_ID
-    echo HUB_ORG
-    echo SFDC_HOST
-    echo CONNECTED_APP_CONSUMER_KEY
-
+    println 'KEY IS' 
+    println JWT_KEY_CRED_ID
+    println HUB_ORG
+    println SFDC_HOST
+    println CONNECTED_APP_CONSUMER_KEY
     def toolbelt = tool 'toolbelt'
-
     stage('checkout source') {
+        //When running in multi-branch job, one must issue this command
         checkout scm
     }
-
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
         stage('Authorize to Dev Org') {
-            def authCmd = isUnix() ?
-                "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}" :
-                "\"${toolbelt}/sfdx\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-
-            def authResult = sh(script: authCmd, returnStatus: true)
-            if (authResult != 0) {
-                error 'Hub org authorization failed'
+            if (isUnix()) {
+                rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file ${jwt_key_file} --set-default-dev-hub --instance-url ${SFDC_HOST}"
+            } else {
+                rc = bat returnStatus: true, script: "\"${toolbelt}/sfdx\" force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file \"${jwt_key_file}\" --set-default-dev-hub --instance-url ${SFDC_HOST}"
             }
+            if (rc != 0) { error 'hub org authorization failed' }
         }
+       stage('Check Apex Test Coverage') {
+            if (isUnix()) {
+                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
+            } else {
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
+            }
+            def jsonSlurper = new JsonSlurperClassic()
+            def report = jsonSlurper.parseText(rmsg)
 
-        stage('Check Apex Test Coverage') {
-            def coverageCmd = isUnix() ?
-                "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --testlevel RunLocalTests --code-coverage" :
-                "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --testlevel RunLocalTests --code-coverage"
-
-            def coverageResult = sh(script: coverageCmd, returnStatus: true)
-            if (coverageResult != 0) {
+            if (report.status == 'Succeeded') {
+                if (report.result.totalCoverage < 75) {
+                    error "Code coverage (${report.result.totalCoverage}%) does not meet the minimum requirement (75%)."
+                }
+            } else {
                 error 'Failed to retrieve code coverage report.'
             }
         }
-
         stage('Deploy Code') {
-            def deployCmd = isUnix() ?
-                "${toolbelt}/sfdx force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}" :
-                "\"${toolbelt}/sfdx\" force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
+            // need to pull out assigned username
 
-            def deployResult = sh(script: deployCmd, returnStatus: true)
-            if (deployResult != 0) {
-                error 'Failed to deploy code.'
-            }
+            if (isUnix()) {
+                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
+            } else {
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
+            }			  
+       printf rmsg
+            println('Hello from a Job DSL script!')
+            println(rmsg)
         }
     }
 }

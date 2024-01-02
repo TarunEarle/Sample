@@ -33,7 +33,7 @@ node {
                 rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --testlevel ${TEST_LEVEL} --codecoverage --targetusername ${HUB_ORG}"
 "
             } else {
-                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx" force:source:deploy:report -u ${HUB_ORG} --testlevel ${TEST_LEVEL} --codecoverage --targetusername ${HUB_ORG}""
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx" force:source:deploy:report -u ${HUB_ORG} --testlevel ${TEST_LEVEL} --codecoverage --targetusername ${HUB_ORG}"
             }
             def jsonSlurper = new JsonSlurperClassic()
             def report = jsonSlurper.parseText(rmsg)

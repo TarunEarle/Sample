@@ -20,14 +20,32 @@ node {
         checkout scm
     }
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        stage('Deploye Code') {
+        stage('Authorize to Hub Org') {
             if (isUnix()) {
                 rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file ${jwt_key_file} --setdefaultdevhubusername --instance-url ${SFDC_HOST}"
             } else {
                 rc = bat returnStatus: true, script: "\"${toolbelt}/sfdx\" force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file \"${jwt_key_file}\" --setdefaultdevhubusername --instance-url ${SFDC_HOST}"
             }
             if (rc != 0) { error 'hub org authorization failed' }
-        println rc
+        }
+        stage('Check Apex Test Coverage') {
+            if (isUnix()) {
+                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage --target-org ${HUB_ORG}"
+            } else {
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --test-result --test-level-coverage --target-org ${HUB_ORG}"
+            }
+            def jsonSlurper = new JsonSlurperClassic()
+            def report = jsonSlurper.parseText(rmsg)
+
+            if (report.status == 'Succeeded') {
+                if (report.result.totalCoverage < 75) {
+                    error "Code coverage (${report.result.totalCoverage}%) does not meet the minimum requirement (75%)."
+                }
+            } else {
+                error 'Failed to retrieve code coverage report.'
+            }
+        }
+        stage('Deploy Code') {
             // need to pull out assigned username
 
             if (isUnix()) {
@@ -38,14 +56,6 @@ node {
        printf rmsg
             println('Hello from a Job DSL script!')
             println(rmsg)
-        }
-          stage('Run Apex Tests') {
-            steps {
-                script {
-                    // Run Apex tests
-                    sh 'sfdx force:apex:test:run -u ${HUB_ORG}'
-                }
-            }
         }
     }
 }

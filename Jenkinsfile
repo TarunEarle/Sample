@@ -32,7 +32,7 @@ node {
             if (isUnix()) {
                 rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
             } else {
-                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx" force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx\" force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
             }
             def jsonSlurper = new JsonSlurperClassic()
             def report = jsonSlurper.parseText(rmsg)

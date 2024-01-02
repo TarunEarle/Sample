@@ -4,7 +4,7 @@ public class StudentControllerTest {
      static void getStudentRecSize() {
       Test.startTest();
       StudentController.getStudentRec();
-      //Studentcontroller.createStudentRec();
+      Studentcontroller.createStudentRec();
       Test.stopTest();
     }
 }

@@ -28,11 +28,23 @@ node {
             }
             if (rc != 0) { error 'hub org authorization failed' }
         }
-       stage('Run Tests In Test Dev Org') {
-                rc = command "${toolbelt}/sf apex run test --target-org ciorg --wait 10 --result-format tap --code-coverage --test-level ${TEST_LEVEL}"
-                if (rc != 0) {
-                    error 'Salesforce unit test run in test scratch org failed.'
+       stage('Check Apex Test Coverage') {
+            if (isUnix()) {
+                rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --testlevel ${TEST_LEVEL} --codecoverage --targetusername ${HUB_ORG}"
+"
+            } else {
+                rmsg = bat returnStdout: true, script: "\"${toolbelt}/sfdx" force:source:deploy:report -u ${HUB_ORG} --testlevel ${TEST_LEVEL} --codecoverage --targetusername ${HUB_ORG}""
+            }
+            def jsonSlurper = new JsonSlurperClassic()
+            def report = jsonSlurper.parseText(rmsg)
+
+            if (report.status == 'Succeeded') {
+                if (report.result.totalCoverage < 75) {
+                    error "Code coverage (${report.result.totalCoverage}%) does not meet the minimum requirement (75%)."
                 }
+            } else {
+                error 'Failed to retrieve code coverage report.'
+            }
         }
         stage('Deploy Code') {
             // need to pull out assigned username

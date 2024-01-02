@@ -39,5 +39,13 @@ node {
             println('Hello from a Job DSL script!')
             println(rmsg)
         }
+          stage('Run Apex Tests') {
+            steps {
+                script {
+                    // Run Apex tests
+                    sh 'sfdx force:apex:test:run -u ${HUB_ORG}'
+                }
+            }
+        }
     }
 }

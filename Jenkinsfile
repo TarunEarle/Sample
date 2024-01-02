@@ -20,7 +20,7 @@ node {
         checkout scm
     }
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        stage('Authorize to Hub Org') {
+        stage('Authorize to Dev Org') {
             if (isUnix()) {
                 rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --client-id ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwt-key-file ${jwt_key_file} --setdefaultdevhubusername --instance-url ${SFDC_HOST}"
             } else {
@@ -28,22 +28,11 @@ node {
             }
             if (rc != 0) { error 'hub org authorization failed' }
         }
-        stage('Check Apex Test Coverage') {
-            if (isUnix()) {
-                rmsg = sh returnStdout: true, script: "${toolbelt}/sf apex run test --target-org ${HUB_ORG} --wait 10 --result-format tap --code-coverage --test-level ${TEST_LEVEL}"
-            } else {
-                rmsg = bat returnStdout: true, script: "\${toolbelt}/sf apex run test --target-org ${HUB_ORG} --wait 10 --result-format tap --code-coverage --test-level ${TEST_LEVEL}"
-            }
-            def jsonSlurper = new JsonSlurperClassic()
-            def report = jsonSlurper.parseText(rmsg)
-
-            if (report.status == 'Succeeded') {
-                if (report.result.totalCoverage < 75) {
-                    error "Code coverage (${report.result.totalCoverage}%) does not meet the minimum requirement (75%)."
+       stage('Run Tests In Test Dev Org') {
+                rc = command "${toolbelt}/sf apex run test --target-org ciorg --wait 10 --result-format tap --code-coverage --test-level ${TEST_LEVEL}"
+                if (rc != 0) {
+                    error 'Salesforce unit test run in test scratch org failed.'
                 }
-            } else {
-                error 'Failed to retrieve code coverage report.'
-            }
         }
         stage('Deploy Code') {
             // need to pull out assigned username

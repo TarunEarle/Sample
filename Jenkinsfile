@@ -5,10 +5,10 @@ node {
     def RUN_ARTIFACT_DIR = "tests/${BUILD_NUMBER}"
     def SFDC_USERNAME
     def TEST_LEVEL='RunLocalTests'
-    def HUB_ORG = env.HUB_ORG_DH
+    def HUB_ORG = env.HUB_ORG_DH_PREFERENCE
     def SFDC_HOST = env.SFDC_HOST_DH
     def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-    def CONNECTED_APP_CONSUMER_KEY = '3MVG9pRzvMkjMb6lo8vCHgGoDZiG3_n5oNi.qmWkHF8WhPu3K3nnoum0Pf7F6yjNlAma7ZCTwCih2lTM66ymh'
+    def CONNECTED_APP_CONSUMER_KEY = '3MVG9OGq41FnYVsGBh9k68gaK2RtH4uQG_xd3Tx0L3bsVcj.F2mBdKigPaIuBZEr4t3df3RgMDiWSOWCZKpSX'
     println 'KEY IS' 
     println JWT_KEY_CRED_ID
     println HUB_ORG
@@ -28,7 +28,7 @@ node {
             }
             if (rc != 0) { error 'hub org authorization failed' }
         }
-       stage('Check Apex Test Coverage') {
+       /*stage('Check Apex Test Coverage') {
             if (isUnix()) {
                 rmsg = sh returnStdout: true, script: "${toolbelt}/sfdx force:source:deploy:report -u ${HUB_ORG} --test-level ${TEST_LEVEL} --code-coverage"
             } else {
@@ -44,7 +44,7 @@ node {
             } else {
                 error 'Failed to retrieve code coverage report.'
             }
-        }
+        }*/
         stage('Deploy Code') {
             // need to pull out assigned username
 

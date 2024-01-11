@@ -3,7 +3,7 @@ import groovy.json.JsonSlurperClassic
 node {
     def BUILD_NUMBER = env.BUILD_NUMBER
     def RUN_ARTIFACT_DIR = "tests/${BUILD_NUMBER}"
-    def SFDC_USERNAME = env.HUB_ORG_DH_PREFERENCE
+    def SFDC_USERNAME = 'preferenceform@sfdx.com'
     def TEST_LEVEL='RunLocalTests'
     //def HUB_ORG = 'preferenceform@sfdx.com'
     //def SFDC_HOST = env.SFDC_HOST_DH

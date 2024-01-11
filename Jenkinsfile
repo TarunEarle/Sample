@@ -9,7 +9,7 @@ node {
     //def SFDC_HOST = env.SFDC_HOST_DH
     def SF_INSTANCE_URL = env.SF_INSTANCE_URL ?: "https://login.salesforce.com"
     def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-    def CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH_PREFERENCE
+    def CONNECTED_APP_CONSUMER_KEY = '3MVG9OGq41FnYVsGBh9k68gaK2RtH4uQG_xd3Tx0L3bsVcj.F2mBdKigPaIuBZEr4t3df3RgMDiWSOWCZKpSX'
     println 'KEY IS' 
     println JWT_KEY_CRED_ID
     println SFDC_USERNAME

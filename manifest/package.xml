@@ -5,7 +5,7 @@
         <members>StudentControllerTest</members>
         <name>ApexClass</name>
     </types>
-    <!--types>
+    <types>
         <members>Student__c</members>
         <name>CustomObject</name>
     </types>
@@ -13,6 +13,6 @@
         <members>Email__c</members>
         <members>Phone__c</members>
         <name>CustomField</name>
-    </types-->
+    </types>
     <version>58.0</version>
 </Package>

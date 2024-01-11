@@ -5,10 +5,10 @@ node {
     def RUN_ARTIFACT_DIR = "tests/${BUILD_NUMBER}"
     def SFDC_USERNAME
     def TEST_LEVEL='RunLocalTests'
-    def HUB_ORG = 'preferenceform@sfdx.com'
+    def HUB_ORG = env.HUB_ORG_DH_PREFERENCE
     def SFDC_HOST = env.SFDC_HOST_DH
     def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-    def CONNECTED_APP_CONSUMER_KEY = '3MVG9OGq41FnYVsGBh9k68gaK2RtH4uQG_xd3Tx0L3bsVcj.F2mBdKigPaIuBZEr4t3df3RgMDiWSOWCZKpSX'
+    def CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH_PREFERENCE
     println 'KEY IS' 
     println JWT_KEY_CRED_ID
     println HUB_ORG

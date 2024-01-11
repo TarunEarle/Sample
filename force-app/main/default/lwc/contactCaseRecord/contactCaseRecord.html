@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="Contacts and Cases">
+        <lightning-layout>
+            <lightning-layout-item size="6">
+                <div class="slds-p-around_medium">
+                    <lightning-datatable key-field="Id" data={contactData} columns={contactColumns}
+                        selected-rows={selectedContactIds} onrowselection={handleContactSelection}>
+                    </lightning-datatable>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <div class="slds-p-around_medium">
+                    <lightning-datatable key-field="Id" data={caseData} columns={caseColumns}
+                        selected-rows={selectedCaseIds} onrowselection={handleCaseSelection}>
+                    </lightning-datatable>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-p-around_medium">
+            <lightning-button label="Select All" onclick={handleSelectAll}></lightning-button>
+
+            <lightning-button label="Deselect All" onclick={handleDeselectAll}></lightning-button>
+
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,31 @@
+<template>
+  <lightning-card>
+    <h3 slot="title">
+      <lightning-icon icon-name="standard:opportunity" size="small"></lightning-icon>  Opportunities data by Months
+    </h3>
+    <br />
+    <template if:true={opportunities}>                  
+      <lightning-layout>
+        <template for:each={oppdata} for:item="Opp">
+          <div key={Opp.key} style="width:60%;border: 1px solid rgb(27, 28, 28);"> <!--class="slds-border_top-->
+            <lightning-layout-item>
+              <div style="background-color:rgb(195, 241, 214); padding:5px; text-align:center; font-size:14px;">
+                <b>{Opp.key}</b>
+              </div>
+              <br />
+              <template for:each={Opp.value} for:item="Oppobj">
+                <div key={Oppobj.Id} style="margin-bottom:10px; text-align:center">
+                  <!--div style="width:30%">{Oppobj.url}</div-->
+                  <!--a href={Oppobj.url}>{Oppobj.Name}</a>
+                  <hr class="horizontal-width:2px;"></hr-->
+                   <lightning-formatted-url value={Oppobj.url}  label={Oppobj.Name}  target="_blank"></lightning-formatted-url>
+                </div>
+
+              </template>
+            </lightning-layout-item>
+          </div>
+        </template>
+      </lightning-layout>
+    </template>
+  </lightning-card>
+</template>

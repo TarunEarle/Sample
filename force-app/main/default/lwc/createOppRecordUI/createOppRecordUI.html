@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="LdsCreateRecord" icon-name="standard:record">
+        <div class="slds-m-around_medium">
+            <lightning-input label="Id" disabled value={oppId}></lightning-input>
+            <lightning-input label="Name" onchange={handleNameChange} class="slds-m-bottom_x-small"></lightning-input>
+            <lightning-input label="Date" type="date" onchange={handleoppChange} class="slds-m-bottom_x-small"></lightning-input>
+            <lightning-combobox if:true={stageValues.data} 
+                name="StageName"
+                label="Stage"
+                value={stage}
+                placeholder="Select Stage"
+                options={stageValues.data.values}
+                onchange={handleStageChange}></lightning-combobox>
+            
+        </div>
+        <p slot="footer">
+            <lightning-button label="Create Opportunity" variant="brand" onclick={createOpportunity}></lightning-button>
+        </p>
+    </lightning-card>   
+</template>

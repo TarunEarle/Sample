@@ -1,0 +1,14 @@
+<template>
+    <lightning-card>
+        <div class="slds-panel__header_align-center">
+            <lightning-input type="search" onclick={handleKeyChange} class="slds-m-bottom_small"
+                label="Account Search" value={priceBookName} ></lightning-input>
+ </div>
+    <!--c-lookup-comp label="PriceBook Names" object-api-name="PricebookEntry" icon-name="standard:document"
+        onrecordselection={onRecievedDocumentSelection}></c-lookup-comp-->
+        <template if:true={ProductList}>
+            <lightning-datatable data={ProductList} columns={columns} key-field="Id" >
+            </lightning-datatable>
+        </template>
+    </lightning-card>
+</template>

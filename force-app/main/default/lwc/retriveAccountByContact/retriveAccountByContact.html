@@ -1,0 +1,9 @@
+<template>
+    <template if:true={accountId}>
+        <lightning-card icon-name="standard:account">
+            <lightning-record-form object-api-name='Contact' record-id={recordId} fields={contactFields}
+                mode='readonly'></lightning-record-form>
+
+        </lightning-card>
+    </template>
+</template>

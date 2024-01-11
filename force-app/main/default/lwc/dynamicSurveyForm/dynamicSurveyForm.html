@@ -1,0 +1,71 @@
+<template>
+    <lightning-card>
+        <slot name="title" class="slds-text-align_center title">
+            <h1>{title} </h1>
+        </slot>
+        <div class="slds-text-align_center" style="height:5rem;padding:3rem;">
+            It was useful for our team to ensure deep understanding of client needs. With its unique visualisation -
+            especially the Relations view - we can turn feedback into actions. The custom labels are also handy to
+            manage specific
+            business questions. And the team behind the product helps a lot to get the most out of it.
+        </div>
+        <div class="slds-p-around_medium">
+            <template for:each={surveyQuestions} for:item="question">
+                <div key={question.type}>
+                    <!--p>{question.index}.{question.question}</p-->
+
+                    <!--------------------Date------------->
+                    <template if:true={question.isDate}>
+                        <lightning-input type="date" label={question.question} required={question.required}></lightning-input>
+                    </template>
+                    <!--------------------Text------------->
+                    <template if:true={question.isText}>
+                        <lightning-input type="text" id={question.type} label={question.question} name={question.type} required={question.required}></lightning-input>
+                    </template>
+                    <!--------------------Email------------->
+                    <template if:true={question.isEmail}>
+                        <lightning-input type="email" label={question.question} id={question.type} name={question.type} required={question.required}></lightning-input>
+                    </template>
+                    <!--------------------Number------------->
+                    <template if:true={question.isnumber}>
+                        <lightning-input type="integer" label={question.question} id={question.type} name={question.type} required={question.required}></lightning-input>
+                    </template>
+                    <!--------------------URL------------->
+                    <template if:true={question.isURL}>
+                        <lightning-input type="url" label={question.question} id={question.type} name={question.type} required={question.required}></lightning-input>
+                    </template>
+                    <!--------------------Text Area------------->
+                    <template if:true={question.isTextArea}>
+                        <lightning-textarea id={question.type} label={question.question} name={question.type} placeholder="type here..."
+                                required={question.required}></lightning-textarea>
+                    </template>
+                    <!--------------------Picklist------------->
+                    <template if:true={question.isPicklist}>
+                        <lightning-combobox name={question.type} options={question.picklistOptions} label={question.question} value={question.selectedOption} required={question.required}>
+                        </lightning-combobox>
+                    </template>
+                    <!--------------------Multi Picklist------------->
+                    <template if:true={question.isMultiSelectPicklist}>
+                        <lightning-dual-listbox options={question.verticalOptions}
+                                label={question.question} value={question.selectedVerticalOptions} onchange={handleVerticalChange} size="3"
+                                required={question.required}></lightning-dual-listbox>
+                    </template>
+                    <!--------------------Boolean------------->
+                    <template if:true={question.isBoolean}>
+                        <lightning-radio-group name={question.type} label={question.question} options={question.booleanOptions}
+                                value={question.booleanValue} required={question.required}>
+                            </lightning-radio-group>
+                    </template>
+
+                    <template if:true={question.answer}>
+                        <p>{question.answer}</p>
+                    </template>
+                </div>
+            </template>
+            <div class="btn">
+                <lightning-button label="Submit" onclick={handleSubmit}></lightning-button>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,19 @@
+<template>
+    <!--lightning-card title="Contact Records with a property">
+        <template for:each={contactslist.data} for:item="contactObj" for:index="contIndex">            
+            <p key={contactObj.Id} class="slds-var-p-horizontal_small">
+                {contactObj.FirstName} {contactObj.LastName}
+            </p>
+        </template>
+    </lightning-card-->
+
+    <lightning-card title="Contact Records with a function">
+        {contactrecords}
+        <template for:each={contactrecords} for:item="contactObj" for:index="contIndex">
+            <p key={contactObj.Id} class="slds-var-p-horizontal_small">
+                Last Name: {contactObj.LastName}
+                <!--lightning-output-field field-name={contactObj}></lightning-output-field-->
+            </p>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,16 @@
+<template>
+    <lightning-card title={title}>
+        <div class="slds-m-around_medium">
+            <template if:true={fieldList}>
+                <lightning-record-form        
+                        object-api-name={objectName}        
+                        fields={fieldList}
+                        columns="2"       
+                        onsuccess={handleSuccess}
+                        onsubmit={handleSubmit}>
+                 </lightning-record-form> 
+            </template>
+         
+        </div>
+    </lightning-card>
+</template>

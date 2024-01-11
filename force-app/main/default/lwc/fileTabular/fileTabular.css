@@ -1,0 +1,21 @@
+.file {
+    float: right;
+    padding: 0rem 1rem 1rem 1rem !important;
+}
+
+.slds-file-selector__dropzone {
+    --lwc-spacingXxxSmall: 0.125rem;
+    --lwc-borderWidthThin: 1px;
+    --slds-g-color-border-base-4: none;
+     color:transparent; 
+
+}
+.slds-file-selector__text .slds-medium-show {
+    visibility: hidden !important;
+}
+/* .slds-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+} */

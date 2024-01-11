@@ -1,0 +1,66 @@
+<aura:component controller="HIC_AddOppLineItemsController" implements="force:hasRecordId,lightning:actionOverride,lightning:hasPageReference,force:lightningQuickActionWithoutHeader">
+    <aura:attribute name="ProductFamilyList" type="List"/>
+    <aura:attribute name="LineItemList" type="list"/>
+    <aura:attribute name="PricebookEntryMap" type="Object"/>
+    <aura:attribute name="productFamilyVsLineItems" type="List"/>
+    <aura:attribute name="recordId" type="string" default="" />
+    <aura:attribute name="Savedisable" type="boolean" default="false"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:html tag="style">
+        .slds-modal__container{ 
+        height : auto; width: 150%; max-width: 150vh; 
+        } 
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }  
+        
+    </aura:html>
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium" >Add Opportunity Product</h4>
+    </div>
+        <aura:iteration items="{!v.PricebookEntryMap}" var="prodFamilyKey">
+                <div>
+                    <table  class="slds-table slds-table_cell-buffer slds-table_bordered" style="width:100%">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"><div class="slds-truncate" title="Product Name">Product Name</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Quantity">Number of Items</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Sales Price">Sales Price</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!prodFamilyKey.newProducts}" var="oppItem" indexVar="index">
+                                <tr class="slds-hint-parent">                        
+                                    <td>
+                                        <lightning:select messageWhenValueMissing="Product Name is Mandatory" aura:id="validateFields" name="select1" label="Select Product Name" value="{!oppItem.Name}" required="true">
+                                            <option label="--None--" text=""/>
+                                            <aura:iteration items="{!prodFamilyKey.value}" var="pricebook">
+                                                <option label="{!pricebook.Product2.Name}" text="{!pricebook.Product2Id}"/>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </td>
+                                    <td><lightning:input aura:id="validateFields" messageWhenValueMissing="Quantity is Mandatory" type="number" required="true" value="{!oppItem.Quantity}" label="Number of Items"/></td>
+                                    <td><lightning:input aura:id="validateFields" messageWhenValueMissing="Sales Price is Mandatory" type="number" formatter="currency" step="0.01" required="true" value="{!oppItem.UnitPrice}" label="Sales Price"/></td>
+                                    <td><lightning:icon iconName="utility:delete" size="small" alternativeText="Delete" onclick="{!c.handleRemoveItem}"/></td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <div onclick="{!c.addNewRow}" data-value="{!prodFamilyKey.key}" style="width: fit-content;padding:10px;">
+                        <lightning:button variant="brand" label="Add" title="Add Line Item"/>	           
+                    </div>
+                </div>
+        </aura:iteration>
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <lightning:button variant="Success" class="slds-button" label="SAVE" onclick="{!c.handleSubmit}" disabled="{!v.Savedisable}"/>
+        <lightning:button variant="destructive" class="slds-button" label="CANCEL" onclick="{!c.handleCancel}"/>
+    </div>
+</aura:component>
